@@ -61,7 +61,9 @@ extern "C" {
     fn rust_helper_preempt_enable();
     #[allow(dead_code)]
     fn rust_helper_preempt_disable();
+    #[allow(dead_code)]
     fn rust_helper_hard_local_irq_save() -> c_types::c_ulong;
+    #[allow(dead_code)]
     fn rust_helper_hard_local_irq_restore(flags: c_types::c_ulong);
     // fn rust_helper_doveail_mm_state() -> *mut bindings::oob_mm_state;
 }
@@ -1365,26 +1367,24 @@ unsafe extern "C" fn rust_handle_inband_event(
             if rros_current() != 0 as *mut SpinLock<RrosThread> {
                 let _ret = put_current_thread();
             }
-        } // case INBAND_TASK_MIGRATION:
-        // 	handle_migration_event(data);
-        // 	break;
-        // case INBAND_TASK_RETUSER:
-        // 	handle_retuser_event();
-        // 	break;
-        // case INBAND_TASK_PTSTOP:
-        // 	handle_ptstop_event();
-        // 	break;
-        // case INBAND_TASK_PTCONT:
-        // 	handle_ptcont_event();
-        // 	break;
-        // case INBAND_TASK_PTSTEP:
-        // 	handle_ptstep_event(data);
-        // 	break;
-        // case INBAND_PROCESS_CLEANUP:
-        // 	handle_cleanup_event(data);
-        // 	break;
-        _ => {
-            pr_warn!("unknown inband event");
+        }
+        InbandEventType::InbandTaskMigration => {
+            pr_debug!("InbandTaskMigration is not implemented");
+        }
+        InbandEventType::InbandTaskRetuser => {
+            pr_debug!("InbandTaskRetuser is not implemented");
+        }
+        InbandEventType::InbandTaskPtstop => {
+            pr_debug!("InbandTaskPtstop is not implemented");
+        }
+        InbandEventType::InbandTaskPtcont => {
+            pr_debug!("InbandTaskPtcont is not implemented");
+        }
+        InbandEventType::InbandTaskPtstep => {
+            pr_debug!("InbandTaskPtstep is not implemented");
+        }
+        InbandEventType::InbandProcessCleanup => {
+            pr_debug!("InbandProcessCleanup is not implemented");
         }
     }
 }
@@ -2000,7 +2000,7 @@ unsafe extern "C" fn sig_irqwork(_work: *mut IrqWork) {
 // }
 
 #[allow(dead_code)]
-fn rros_get_inband_pid(thread: *mut RrosThread) -> i32 {
+pub fn rros_get_inband_pid(thread: *const RrosThread) -> i32 {
     unsafe {
         if (*thread).state & (T_ROOT | T_DORMANT | T_ZOMBIE) != 0 {
             return 0;
@@ -2499,6 +2499,7 @@ impl KthreadRunner {
     }
 }
 
+#[allow(dead_code)]
 pub fn rros_set_period(
     clock: &mut clock::RrosClock,
     idate: ktime::KtimeT,
@@ -2570,6 +2571,7 @@ pub fn rros_set_period(
     // EXPORT_SYMBOL_GPL(rros_set_period);
 }
 
+#[allow(dead_code)]
 pub fn rros_wait_period() -> Result<usize> {
     let curr = rros_current();
     let thread = unsafe { Arc::from_raw(curr as *mut SpinLock<RrosThread>) };
@@ -2652,6 +2654,7 @@ pub fn rros_wait_period() -> Result<usize> {
     // EXPORT_SYMBOL_GPL(rros_wait_period);
 }
 
+#[allow(dead_code)]
 fn rros_get_timer_overruns(timer: Arc<SpinLock<timer::RrosTimer>>) -> Result<u32> {
     // unsigned long rros_get_timer_overruns(struct rros_timer *timer)
     // {
